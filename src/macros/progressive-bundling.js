@@ -1,4 +1,4 @@
-module.export = function (arc, cfn, stage) {
+module.exports = function(arc, cfn, stage) {
   if (!arc.static) {
     console.log('Needs arc.static to be defined');
     return;
