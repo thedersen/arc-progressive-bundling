@@ -5,7 +5,7 @@
   "bin": {
     "pbsandbox": "./bin/sandbox",
     "esinstall": "./bin/esinstall"
-  }
+  },
   "scripts": {
     "postinstall": "cd src/http/get-_modules-catchall && npm i"
   },
