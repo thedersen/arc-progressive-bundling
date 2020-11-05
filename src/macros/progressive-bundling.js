@@ -9,7 +9,7 @@ module.exports = function(arc, cfn, stage) {
     Type: 'AWS::Serverless::Function',
     Properties: {
       Handler: 'index.handler',
-      CodeUri: './node_modules/arc-progressive-bundling/src/http/get-_modules-catchall',
+      CodeUri: './node_modules/arc-progressive-bundle/src/http/get-_modules-catchall',
       Runtime: 'nodejs12.x',
       MemorySize: 1152,
       Timeout: 15,
