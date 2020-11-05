@@ -1,7 +1,7 @@
 const {createHash} = require('crypto');
 const {join, parse} = require('path');
 const {existsSync} = require('fs');
-const {readFile, writeFile, mkdir} = require('fs/promises');
+const {readFile, writeFile, mkdir} = require('fs').promises;
 const {tables} = require('@architect/functions');
 const rollup = require('rollup');
 
