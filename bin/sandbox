@@ -22,10 +22,10 @@ if (!process.env.DEBUG) {
       'src/views/package.json',
     ],
     proxy: `localhost:${process.env.PORT}`,
-    // serveStatic: [{
-    //   route: '/_modules',
-    //   dir: ['src/views/modules'],
-    // }],
+    serveStatic: [{
+      route: '/_modules',
+      dir: ['src/views/modules'],
+    }],
   });
 
   const bs2 = browserSync.create();

@@ -6,6 +6,7 @@
     "pbsandbox": "./bin/sandbox",
     "esinstall": "./bin/esinstall"
   },
+  "main": "src/macros/progressive-bundling.js",
   "scripts": {
     "postinstall": "cd src/http/get-_modules-catchall && npm i"
   },
