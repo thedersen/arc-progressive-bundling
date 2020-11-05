@@ -1,0 +1,21 @@
+{
+  "name": "arc-progressive-bundle",
+  "version": "0.1.0",
+  "description": "Progressive Bundling for Architect Projects",
+  "bin": {
+    "pbsandbox": "./bin/sandbox",
+    "esinstall": "./bin/esinstall"
+  }
+  "scripts": {
+    "postinstall": "cd src/http/get-_modules-catchall && npm i"
+  },
+  "peerDependencies": {
+    "@architect/architect": "*",
+    "@architect/sandbox": "*"
+  },
+  "dependencies": {
+    "browser-sync": "^2.26.13",
+    "esinstall": "^0.3.6",
+    "jsonfile": "^6.1.0"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@architect/functions": "^3.13.6",
+    "rollup": "^2.33.1"
+  }
+}
