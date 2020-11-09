@@ -73,7 +73,7 @@ async function cacheWrite(module, source) {
     const result = await s3.putObject({
       ACL: 'public-read',
       Bucket: process.env.ARC_STATIC_BUCKET,
-      Key: `${ process.env.ARC_STATIC_FOLDER }/${ fingerprint }`,
+      Key: fingerprint,
       Body: source,
       ContentType: `text/${ext === '.js'? 'javascript': 'css' }; charset=UTF-8`,
       CacheControl: 'max-age=315360000',
