@@ -1,3 +1,4 @@
+const aws = require('aws-sdk');
 const {createHash} = require('crypto');
 const {join, parse} = require('path');
 const {existsSync} = require('fs');
