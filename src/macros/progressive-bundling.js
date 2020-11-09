@@ -22,14 +22,14 @@ module.exports = async function(arc, cfn, stage) {
   }
 
   // Copy modules
-  await copySource('./src/views', './node_modules/arc-progressive-bundle/src/views');
+  await copySource('./src/views', './node_modules/arc-progressive-bundle/src/http/get-_modules-catchall/node_modules/@architect/views');
 
   // Add lambda for bundling
   cfn.Resources.GetModulesCatchall = {
     Type: 'AWS::Serverless::Function',
     Properties: {
       Handler: 'index.handler',
-      CodeUri: './node_modules/arc-progressive-bundle/src/http/get-_modules-catchall/node_modules/@architect/views',
+      CodeUri: './node_modules/arc-progressive-bundle/src/http/get-_modules-catchall',
       Runtime: 'nodejs12.x',
       MemorySize: 1152,
       Timeout: 15,
