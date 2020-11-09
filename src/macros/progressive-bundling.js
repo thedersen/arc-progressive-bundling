@@ -1,8 +1,28 @@
-module.exports = function(arc, cfn, stage) {
+const cpr = require('crp');
+
+function copySource(from, to) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      deleteFirst: true,
+    };
+    cpr(from, to, options, (err, files) => {
+      if(err) {
+        reject(err);
+      } else {
+        resolve(files);
+      }
+    })
+  });
+}
+
+module.exports = async function(arc, cfn, stage) {
   if (!arc.static) {
     console.log('Needs arc.static to be defined');
     return;
   }
+
+  // Copy modules
+  await copySource('./src/views', './node_modules/arc-progressive-bundle/src/views');
 
   // Add lambda for bundling
   cfn.Resources.GetModulesCatchall = {

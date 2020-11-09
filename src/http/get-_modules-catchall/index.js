@@ -19,7 +19,7 @@ exports.handler = async function(req) {
         'content-type': 'text/javascript; charset=utf8'
       },
       body: js.toString()
-    }
+    };
   }
 
   const cachedFilename = await cacheRead(module);
@@ -27,16 +27,16 @@ exports.handler = async function(req) {
     return {
       statusCode: 302,
       headers: {
-        location: `/_static/${cacheFilename}`,
+        location: `/_static/${cachedFilename}`,
       }
     };
-  };
+  }
 
   if (!cachedFilename) {
     if (!existsSync(fullPath)) {
       return {
         statusCode: 404
-      }
+      };
     }
     const bundle = await bundleModule(module);
     const fileName = await cacheWrite(module, bundle);

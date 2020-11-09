@@ -1,6 +1,6 @@
 {
   "name": "arc-progressive-bundle",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Progressive Bundling for Architect Projects",
   "bin": {
     "pbsandbox": "./bin/sandbox",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "browser-sync": "^2.26.13",
+    "cpr": "^3.0.1",
     "esinstall": "^0.3.6",
     "jsonfile": "^6.1.0"
   }
