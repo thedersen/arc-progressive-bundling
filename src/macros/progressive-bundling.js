@@ -1,4 +1,4 @@
-const cpr = require('crp');
+const cpr = require('cpr');
 
 function copySource(from, to) {
   return new Promise((resolve, reject) => {
