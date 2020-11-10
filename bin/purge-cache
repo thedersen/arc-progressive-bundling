@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+const {tables} = require('@architect/functions');
+const {banner, toLogicalID, updater} = require('@architect/utils');
+const {read} = require('@architect/parser');
+
+function chunk(arr, chunkSize) {
+  return arr.reduce((resultArray, item, index) => {
+    const chunkIndex = Math.floor(index/chunkSize);
+
+    if(!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = []; // start a new chunk
+    }
+
+    resultArray[chunkIndex].push(item);
+
+    return resultArray;
+    }, []);
+}
+
+async function scanTable(data) {
+  const params = {};
+  const scanResults = [];
+
+  let items;
+  do{
+    items = await data['pb-cache'].scan(params);
+    items.Items.forEach((item) => scanResults.push(item));
+    params.ExclusiveStartKey  = items.LastEvaluatedKey;
+  } while (typeof items.LastEvaluatedKey !== 'undefined');
+
+  return scanResults;
+}
+
+(async () => {
+  const log = updater('PB Purge Cache');
+  const {arc} = read();
+  banner();
+
+  const env = process.argv[2] || 'staging';
+
+  if (env !== 'staging' && env !== 'production') {
+    log.error('Invalid environment. Should be staging (default) or production');
+    return;
+  }
+
+  const capEnv = env.charAt(0).toUpperCase() + env.substr(1);
+  process.env.ARC_LOCAL = 1;
+  process.env.NODE_ENV = env;
+  process.env.ARC_CLOUDFORMATION = `${toLogicalID(arc.app[0])}${capEnv}`;
+
+  const data = await tables();
+  const items = await scanTable(data);
+  const chunks = chunk(items, 25); // Max 25 requests per batch write
+
+  await Promise.all([chunks.map((chunk) => {
+    const keys = chunk.map(item => item.key);
+    const params = {
+      RequestItems: {
+        [data._name('pb-cache')]: keys.map((key) => {
+          return {
+            DeleteRequest: {
+              Key: {
+                key,
+              }
+            }
+          }
+        }),
+      }
+    };
+    const msg = `Purging ${keys.join(', ')}`;
+    log.start(msg);
+    return data._doc.batchWrite(params)
+      .promise()
+      .then(() => log.done(msg))
+      .catch(e => log.err(e));
+  })]);
+})().catch(e => {
+  console.log(e);
+});

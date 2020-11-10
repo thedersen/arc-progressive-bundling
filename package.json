@@ -1,20 +1,26 @@
 {
   "name": "arc-progressive-bundle",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Progressive Bundling for Architect Projects",
+  "license": "MIT",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/thedersen/arc-progressive-bundling"
+  },
   "bin": {
-    "pbsandbox": "./bin/sandbox",
-    "esinstall": "./bin/esinstall"
+    "pb-sandbox": "./bin/sandbox",
+    "pb-esinstall": "./bin/esinstall",
+    "pb-purge-cache": "./bin/purge-cache"
   },
   "main": "src/macros/progressive-bundling.js",
   "scripts": {
     "postinstall": "cd src/http/get-_modules-catchall && npm i"
   },
   "peerDependencies": {
-    "@architect/architect": "*",
-    "@architect/sandbox": "*"
+    "@architect/architect": "*"
   },
   "dependencies": {
+    "@architect/functions": "^3.13.6",
     "browser-sync": "^2.26.13",
     "cpr": "^3.0.1",
     "esinstall": "^0.3.6",

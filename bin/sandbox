@@ -13,15 +13,15 @@ if (!process.env.DEBUG) {
   bs.init({
     open: false,
     ui: false,
-    watch: true,
-    // files: [
-    //   'public/**/*',
-    //   'src/**/*.js',
-    // ],
-    // ignore: [
-    //   'src/views/node_modules/**/*',
-    //   'src/views/package.json',
-    // ],
+    files: [
+      'public/**/*',
+      'src/**/*.js',
+    ],
+    ignore: [
+      'public/static.json',
+      'src/views/node_modules/**/*',
+      'src/views/package.json',
+    ],
     proxy: `localhost:${process.env.PORT}`,
     serveStatic: [{
       route: '/_modules',
