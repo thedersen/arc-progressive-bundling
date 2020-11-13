@@ -1,3 +1,4 @@
+const {updater} = require('@architect/utils');
 const cpr = require('cpr');
 
 function copySource(from, to) {
@@ -16,20 +17,24 @@ function copySource(from, to) {
 }
 
 module.exports = async function(arc, cfn, stage) {
+  const log = updater('ProgressiveBundling');
+
   if (!arc.static) {
-    console.log('Needs arc.static to be defined');
+    log.error('Needs arc.static to be defined');
     return;
   }
 
+  log.start('Copying modules into bundler function');
   // Copy modules
-  await copySource('./src/views', './node_modules/arc-progressive-bundle/src/http/get-_modules-catchall/node_modules/@architect/views');
+  await copySource('./src/views/modules', './node_modules/arc-progressive-bundling/src/bundler-function/modules');
+  log.done('Copied modules into bundler function');
 
   // Add lambda for bundling
   cfn.Resources.GetModulesCatchall = {
     Type: 'AWS::Serverless::Function',
     Properties: {
       Handler: 'index.handler',
-      CodeUri: './node_modules/arc-progressive-bundle/src/http/get-_modules-catchall',
+      CodeUri: './node_modules/arc-progressive-bundling/src/bundler-function',
       Runtime: 'nodejs12.x',
       MemorySize: 1152,
       Timeout: 15,

@@ -9,21 +9,8 @@ const rollup = require('rollup');
 exports.handler = async function(req) {
   const module = req.pathParameters.proxy;
   const fullPath = getFullPath(module);
-
-  if (req.queryParameters && req.queryParameters.pb === '0') {
-    const js = await readFile(fullPath);
-
-    return {
-      statusCode: 200,
-      headers: {
-        'cache-control': 'no-store',
-        'content-type': 'text/javascript; charset=utf8'
-      },
-      body: js.toString()
-    };
-  }
-
   const cachedFilename = await cacheRead(module);
+
   if (cachedFilename) {
     return {
       statusCode: 302,
@@ -64,21 +51,15 @@ async function cacheWrite(module, source) {
   const {dir, name, ext} = parse(module);
   const fingerprint = join(dir, `${name}-${sha}${ext}`);
 
-  if (process.env.NODE_ENV === 'testing') {
-    const pathToPublic = process.env.ARC_SANDBOX_PATH_TO_STATIC;
-    await mkdir(join(pathToPublic, dir), {recursive: true});
-    await writeFile(join(pathToPublic, fingerprint), source);
-  } else {
-    const s3 = new aws.S3();
-    const result = await s3.putObject({
-      ACL: 'public-read',
-      Bucket: process.env.ARC_STATIC_BUCKET,
-      Key: fingerprint,
-      Body: source,
-      ContentType: `text/${ext === '.js'? 'javascript': 'css' }; charset=UTF-8`,
-      CacheControl: 'max-age=315360000',
-    }).promise();
-  }
+  const s3 = new aws.S3();
+  const result = await s3.putObject({
+    ACL: 'public-read',
+    Bucket: process.env.ARC_STATIC_BUCKET,
+    Key: fingerprint,
+    Body: source,
+    ContentType: `text/${ext === '.js'? 'javascript': 'css' }; charset=UTF-8`,
+    CacheControl: 'max-age=315360000',
+  }).promise();
 
   const data = await tables();
   await data['pb-cache'].put({
@@ -98,12 +79,5 @@ async function bundleModule(module) {
 }
 
 function getFullPath(module) {
-  return join(
-    process.cwd(),
-    'node_modules',
-    '@architect',
-    'views',
-    'modules',
-    module
-  );
+  return join(process.cwd(), 'modules', module);
 }
