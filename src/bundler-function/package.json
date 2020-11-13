@@ -1,9 +1,9 @@
 {
-  "description": "Progressive Bundle handler for Architect",
+  "description": "Progressive Bundling handler for Architect",
   "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/thedersen/arc-progressive-bundling"
+    "type": "git",
+    "url": "https://github.com/thedersen/arc-progressive-bundling"
   },
   "dependencies": {
     "@architect/functions": "^3.13.6",

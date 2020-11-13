@@ -25,7 +25,6 @@ module.exports = async function(arc, cfn, stage) {
   }
 
   log.start('Copying modules into bundler function');
-  // Copy modules
   await copySource('./src/views/modules', './node_modules/arc-progressive-bundling/src/bundler-function/modules');
   log.done('Copied modules into bundler function');
 

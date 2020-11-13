@@ -8,7 +8,6 @@ const rollup = require('rollup');
 
 exports.handler = async function(req) {
   const module = req.pathParameters.proxy;
-  const fullPath = getFullPath(module);
   const cachedFilename = await cacheRead(module);
 
   if (cachedFilename) {
@@ -20,21 +19,20 @@ exports.handler = async function(req) {
     };
   }
 
-  if (!cachedFilename) {
-    if (!existsSync(fullPath)) {
-      return {
-        statusCode: 404
-      };
-    }
-    const bundle = await bundleModule(module);
-    const fileName = await cacheWrite(module, bundle);
+  if (!existsSync(getFullPath(module))) {
     return {
-      statusCode: 302,
-      headers: {
-        location: `/_static/${fileName}`,
-      }
+      statusCode: 404
     };
   }
+
+  const bundle = await bundleModule(module);
+  const fileName = await cacheWrite(module, bundle);
+  return {
+    statusCode: 302,
+    headers: {
+      location: `/_static/${fileName}`,
+    }
+  };
 }
 
 async function cacheRead(module) {
