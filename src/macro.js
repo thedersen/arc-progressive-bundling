@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 const {updater} = require('@architect/utils');
 const cpr = require('cpr');
 
@@ -7,16 +8,16 @@ function copySource(from, to) {
       deleteFirst: true,
     };
     cpr(from, to, options, (err, files) => {
-      if(err) {
+      if (err) {
         reject(err);
       } else {
         resolve(files);
       }
-    })
+    });
   });
 }
 
-module.exports = async function(arc, cfn, stage) {
+module.exports = async function (arc, cfn, stage) {
   const log = updater('ProgressiveBundling');
 
   if (!arc.static) {
@@ -25,7 +26,10 @@ module.exports = async function(arc, cfn, stage) {
   }
 
   log.start('Copying modules into bundler function');
-  await copySource('./src/views/modules', './node_modules/arc-progressive-bundling/src/bundler-function/modules');
+  await copySource(
+    './src/views/modules',
+    './node_modules/arc-progressive-bundling/src/bundler-function/modules'
+  );
   log.done('Copied modules into bundler function');
 
   // Add lambda for bundling
@@ -100,61 +104,60 @@ module.exports = async function(arc, cfn, stage) {
 
   // Add policy for access to PBCache table
   cfn.Resources.Role.Properties.Policies.push({
-    "PolicyName": "ArcPBCacheDynamoPolicy",
-    "PolicyDocument": {
-      "Statement": [
+    PolicyName: 'ArcPBCacheDynamoPolicy',
+    PolicyDocument: {
+      Statement: [
         {
-          "Effect": "Allow",
-          "Action": [
-            "dynamodb:BatchGetItem",
-            "dynamodb:BatchWriteItem",
-            "dynamodb:PutItem",
-            "dynamodb:DeleteItem",
-            "dynamodb:GetItem",
-            "dynamodb:Query",
-            "dynamodb:Scan",
-            "dynamodb:UpdateItem",
-            "dynamodb:GetRecords",
-            "dynamodb:GetShardIterator",
-            "dynamodb:DescribeStream",
-            "dynamodb:ListStreams"
+          Effect: 'Allow',
+          Action: [
+            'dynamodb:BatchGetItem',
+            'dynamodb:BatchWriteItem',
+            'dynamodb:PutItem',
+            'dynamodb:DeleteItem',
+            'dynamodb:GetItem',
+            'dynamodb:Query',
+            'dynamodb:Scan',
+            'dynamodb:UpdateItem',
+            'dynamodb:GetRecords',
+            'dynamodb:GetShardIterator',
+            'dynamodb:DescribeStream',
+            'dynamodb:ListStreams',
           ],
-          "Resource": [
+          Resource: [
             {
-              "Fn::Sub": [
-                "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
+              'Fn::Sub': [
+                'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}',
                 {
-                  "tablename": {
-                    "Ref": "PBCacheTable"
-                  }
-                }
-              ]
+                  tablename: {
+                    Ref: 'PBCacheTable',
+                  },
+                },
+              ],
             },
             {
-              "Fn::Sub": [
-                "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
+              'Fn::Sub': [
+                'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*',
                 {
-                  "tablename": {
-                    "Ref": "PBCacheTable"
-                  }
-                }
-              ]
+                  tablename: {
+                    Ref: 'PBCacheTable',
+                  },
+                },
+              ],
             },
             {
-              "Fn::Sub": [
-                "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/stream/*",
+              'Fn::Sub': [
+                'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/stream/*',
                 {
-                  "tablename": {
-                    "Ref": "PBCacheTable"
-                  }
-                }
-              ]
-            }
-
-          ]
-        }
-      ]
-    }
+                  tablename: {
+                    Ref: 'PBCacheTable',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   });
 
   // Add table name to SSM
@@ -177,4 +180,4 @@ module.exports = async function(arc, cfn, stage) {
   };
 
   return cfn;
-}
+};

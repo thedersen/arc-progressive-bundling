@@ -4,8 +4,8 @@
   "description": "Progressive Bundling for Architect Projects",
   "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/thedersen/arc-progressive-bundling"
+    "type": "git",
+    "url": "https://github.com/thedersen/arc-progressive-bundling"
   },
   "bin": {
     "pb-sandbox": "./bin/sandbox",
@@ -14,7 +14,15 @@
   },
   "main": "src/macro.js",
   "scripts": {
+    "lint": "xo --fix",
     "postinstall": "cd src/bundler-function && npm i"
+  },
+  "xo": {
+    "prettier": true,
+    "space": 2
+  },
+  "prettier": {
+    "trailingComma": "es5"
   },
   "peerDependencies": {
     "@architect/architect": "*"
@@ -25,5 +33,8 @@
     "cpr": "^3.0.1",
     "esinstall": "^0.3.6",
     "jsonfile": "^6.1.0"
+  },
+  "devDependencies": {
+    "xo": "^0.34.2"
   }
 }
