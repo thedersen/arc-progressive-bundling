@@ -1,14 +1,8 @@
-const esbuild = require('esbuild');
+const rollup = require('rollup');
 
 module.exports = async function(filename) {
-  const result = await esbuild.build({
-    entryPoints: [filename],
-    bundle: true,
-    write: false,
-    minify: true,
-    sourcemap: process.env.NODE_ENV === 'testing',
-    format: 'esm',
-  });
+  const bundle = await rollup.rollup({input: filename});
+  const bundled = await bundle.generate({format: 'esm'});
 
-  return result.outputFiles[0].contents;
+  return bundled.output[0].code;
 }
