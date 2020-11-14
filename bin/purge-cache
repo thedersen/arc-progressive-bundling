@@ -3,7 +3,7 @@ const purgeCache = require('../src/purge-cache.js');
 
 const isProd = opt => opt === 'production' || opt === '--production' || opt === '-p';
 const isVerbose = opt => opt === 'verbose' || opt === '--verbose' || opt === '-v';
-const isDryRun =  opt => opt === '--dry-run'
+const isDryRun =  opt => opt === '--dry-run';
 
 (async () => {
   await purgeCache({

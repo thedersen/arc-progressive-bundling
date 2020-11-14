@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const esmInstall = require('../src/sandbox.js');
+const sandbox = require('../src/sandbox.js');
 
 if (!process.env.DEBUG) {
   console.debug = () => {};
