@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 const sandbox = require('../src/sandbox.js');
 
+const doBundle =  opt => opt === '--bundle';
+
 if (!process.env.DEBUG) {
   console.debug = () => {};
 }
 
 (async () => {
-  await sandbox();
+  await sandbox({bundle: process.argv.some(doBundle)});
 })().catch(e => {
   console.log(e);
 });

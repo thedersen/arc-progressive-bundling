@@ -1,6 +1,6 @@
 {
   "name": "arc-progressive-bundling",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "Progressive Bundling for Architect Projects",
   "license": "MIT",
   "repository": {
@@ -32,7 +32,8 @@
     "browser-sync": "^2.26.13",
     "cpr": "^3.0.1",
     "esinstall": "^0.3.6",
-    "jsonfile": "^6.1.0"
+    "jsonfile": "^6.1.0",
+    "rollup": "^2.33.1"
   },
   "devDependencies": {
     "xo": "^0.34.2"
