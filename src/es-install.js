@@ -48,9 +48,9 @@ module.exports = async function () {
     const pathFromProjectRoot = path.join(process.cwd(), 'src', 'views');
 
     if (existsSync(path.join(pathFromProjectRoot, 'package.json'))) {
-      await installInto(pathFromProjectRoot);
+      return await installInto(pathFromProjectRoot);
     } else if (existsSync(path.join(process.cwd(), 'package.json'))) {
-      await installInto(process.cwd());
+      return await installInto(process.cwd());
     } else {
       updater('esinstall').status('No package.json file found.');
     }

@@ -14,11 +14,14 @@ module.exports = async function ({bundle}) {
     open: false,
     ui: false,
     files: ['public/**/*', 'src/**/*.js'],
-    ignore: [
-      'public/static.json',
-      'src/views/node_modules/**/*',
-      'src/views/package.json',
-    ],
+    watchOptions: {
+      ignored: [
+        'public/static.json',
+        '**/node_modules/**',
+        '**/package.json',
+        '**/package-lock.json',
+      ],
+    },
     proxy: `localhost:${process.env.PORT}`,
   };
   if (bundle) {
@@ -53,7 +56,8 @@ module.exports = async function ({bundle}) {
     ];
   }
 
-  browserSync.create().init(options, () => {
+  const bs = browserSync.create();
+  bs.init(options, () => {
     console.log(); // Add an empty line
     if (bundle) {
       log.status('Enabled Progressive Bundling');
@@ -63,6 +67,9 @@ module.exports = async function ({bundle}) {
   browserSync
     .create()
     .watch('src/views/package.json', {ignoreInitial: true}, () => {
-      esInstall();
+      bs.pause();
+      esInstall().then(() => {
+        bs.resume()
+      });
     });
 };
