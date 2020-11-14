@@ -3,7 +3,7 @@ const {createHash} = require('crypto');
 const path = require('path');
 const {existsSync} = require('fs');
 const {tables} = require('@architect/functions');
-const rollup = require('rollup');
+const bundleFile = require('./bundle-file.js');
 
 exports.handler = async function (request) {
   const module = request.pathParameters.proxy;
@@ -24,7 +24,7 @@ exports.handler = async function (request) {
     };
   }
 
-  const bundle = await bundleModule(module);
+  const bundle = await bundleFile(getFullPath(module));
   const fileName = await cacheWrite(module, bundle);
   return {
     statusCode: 302,
@@ -69,14 +69,6 @@ async function cacheWrite(module, source) {
   });
 
   return fingerprint;
-}
-
-async function bundleModule(module) {
-  const input = getFullPath(module);
-  const bundle = await rollup.rollup({input});
-  const bundled = await bundle.generate({format: 'esm'});
-
-  return bundled.output[0].code;
 }
 
 function getFullPath(module) {

@@ -1,17 +1,9 @@
-const rollup = require('rollup');
 const path = require('path');
 const sandbox = require('@architect/sandbox');
 const {updater} = require('@architect/utils');
 const browserSync = require('browser-sync');
 const esInstall = require('./es-install.js');
-
-async function bundleModule(module) {
-  const input = path.join(process.cwd(), 'src', 'views', 'modules', module);
-  const bundle = await rollup.rollup({input});
-  const bundled = await bundle.generate({format: 'esm'});
-
-  return bundled.output[0].code;
-}
+const bundleFile = require('./bundler-function/bundle-file.js');
 
 module.exports = async function ({bundle}) {
   const log = updater('ProgressiveBundling');
@@ -34,10 +26,17 @@ module.exports = async function ({bundle}) {
       {
         route: '/_modules',
         handle(request, response) {
+          const start = process.hrtime();
           const mod = request.url.slice(1); // Remove leading /
+          const filename = path.join(process.cwd(), 'src', 'views', 'modules', mod);
           log.start(`Bundling ${mod}`);
-          bundleModule(mod).then((source) => {
-            log.done(`Bundled ${mod}`);
+          bundleFile(filename).then((source) => {
+            const end = process.hrtime(start);
+            if (end[0] > 0) {
+              log.done(`Bundled ${mod} in ${end[0]}.${Math.round(end[1]/1000000)}s`);
+            } else {
+              log.done(`Bundled ${mod} in ${Math.round(end[1]/1000000)}ms`);
+            }
             response.writeHead(200, {'Content-Type': 'text/javascript'});
             response.write(source);
             response.end();
