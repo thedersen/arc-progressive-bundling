@@ -1,103 +1,16 @@
 #!/usr/bin/env node
-const {tables} = require('@architect/functions');
-const {banner, toLogicalID, updater} = require('@architect/utils');
+const purgeCache = require('../src/purge-cache.js');
 
 const isProd = opt => opt === 'production' || opt === '--production' || opt === '-p';
 const isVerbose = opt => opt === 'verbose' || opt === '--verbose' || opt === '-v';
 const isDryRun =  opt => opt === '--dry-run'
 
-function chunk(arr, chunkSize) {
-  return arr.reduce((resultArray, item, index) => {
-    const chunkIndex = Math.floor(index/chunkSize);
-
-    if(!resultArray[chunkIndex]) {
-      resultArray[chunkIndex] = [];
-    }
-
-    resultArray[chunkIndex].push(item);
-
-    return resultArray;
-    }, []);
-}
-
-async function scanTable(data) {
-  const params = {};
-  const scanResults = [];
-
-  let items;
-  do{
-    items = await data['pb-cache'].scan(params);
-    items.Items.forEach((item) => scanResults.push(item));
-    params.ExclusiveStartKey  = items.LastEvaluatedKey;
-  } while (typeof items.LastEvaluatedKey !== 'undefined');
-
-  return scanResults;
-}
-
 (async () => {
-  if (process.argv.some(isDryRun)) {
-    const log = updater('ProgressiveBundling [dry-run]');
-    log.status('Skipping purging progressive bundling cache');
-    return;
-  }
-
-  const log = updater('ProgressiveBundling');
-
-  // Banner also initializes AWS env vars. Quiet hides banner..
-  const quiet = process.env.ARC_QUIET || process.env.QUIET;
-  process.env.ARC_QUIET = true;
-  banner({needsValidCreds: true});
-  if (!quiet) {
-    delete process.env.ARC_QUIET;
-    delete process.env.QUIET;
-  }
-
-  const env = process.argv.some(isProd) ? 'production' : 'staging';
-  const capEnv = env.charAt(0).toUpperCase() + env.substr(1);
-  process.env.ARC_LOCAL = 1;
-  process.env.NODE_ENV = env;
-  process.env.ARC_CLOUDFORMATION = `${toLogicalID(process.env.ARC_APP_NAME)}${capEnv}`;
-
-  const data = await tables();
-  const items = await scanTable(data);
-  if (items.length === 0) {
-    log.status('Progressive Bundle Cache is empty - nothing to purge!');
-    return;
-  } else {
-    log.start('Purging Progressive Bundle Cache');
-  }
-  const chunks = chunk(items, 25); // Max 25 requests per batch write
-
-  await Promise.all([chunks.map((chunk) => {
-    const keys = chunk.map(item => item.key);
-    const params = {
-      RequestItems: {
-        [data._name('pb-cache')]: keys.map((key) => {
-          return {
-            DeleteRequest: {
-              Key: {
-                key,
-              }
-            }
-          }
-        }),
-      }
-    };
-
-    return data._doc.batchWrite(params)
-      .promise()
-      .catch(e => log.error(e));
-  })]);
-  if (items.length > 0) {
-    const logLines = [];
-    if (process.argv.some(isVerbose)) {
-      items.forEach(item => {
-        logLines.push(`Purged ${item.key}`);
-      });
-    }
-    logLines.push(`Purged ${items.length} files`);
-    log.status('Purged Progressive Bundle Cache', ...logLines);
-  }
+  await purgeCache({
+    dryRun: process.argv.some(isDryRun),
+    verbose: process.argv.some(isVerbose),
+    env: process.argv.some(isProd) ? 'production' : 'staging',
+  });
 })().catch(e => {
   console.log(e);
 });

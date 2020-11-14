@@ -1,39 +1,12 @@
 #!/usr/bin/env node
-const sandbox = require('@architect/sandbox');
-const browserSync = require('browser-sync');
-const esmInstall = require('./es-install.js');
+const esmInstall = require('../src/sandbox.js');
 
 if (!process.env.DEBUG) {
   console.debug = () => {};
 }
 
 (async () => {
-  await sandbox.start();
-  const bs = browserSync.create();
-  bs.init({
-    open: false,
-    ui: false,
-    files: [
-      'public/**/*',
-      'src/**/*.js',
-    ],
-    ignore: [
-      'public/static.json',
-      'src/views/node_modules/**/*',
-      'src/views/package.json',
-    ],
-    proxy: `localhost:${process.env.PORT}`,
-    serveStatic: [{
-      route: '/_modules',
-      dir: ['src/views/modules'],
-    }],
-  });
-
-  const bs2 = browserSync.create();
-  bs2.watch('src/views/package.json', {ignoreInitial: true}, () => {
-    console.log('Detected change in package.json');
-    esmInstall();
-  });
+  await sandbox();
 })().catch(e => {
   console.log(e);
 });

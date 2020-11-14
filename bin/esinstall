@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-const esmInstall = require('./es-install.js');
+const esInstall = require('../src/es-install.js');
 
 if (!process.env.DEBUG) {
   console.debug = () => {};
 }
 
 (async () => {
-  await esmInstall();
+  await esInstall();
 })().catch(e => {
   console.error('Error:');
   console.error(e);
