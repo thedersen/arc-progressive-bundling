@@ -13,6 +13,7 @@ module.exports = async function ({bundle}) {
   const options = {
     open: false,
     ui: false,
+    notify: false,
     files: ['public/**/*', 'src/**/*.js'],
     watchOptions: {
       ignored: [
